@@ -1,473 +1,514 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Infinite Amazing Facts</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
+<title>Smart Infinite Facts Generator</title>
 
-    body{
-      font-family:Arial,sans-serif;
-      min-height:100vh;
-      background:linear-gradient(135deg,#020617,#0f172a);
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:20px;
-      color:white;
-    }
+<style>
 
-    .container{
-      width:100%;
-      max-width:900px;
-      text-align:center;
-    }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-    h1{
-      font-size:3rem;
-      margin-bottom:10px;
-    }
+body{
+  font-family:Arial,sans-serif;
+  background:#0f172a;
+  color:white;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
 
-    .subtitle{
-      color:#94a3b8;
-      margin-bottom:30px;
-    }
+.container{
+  width:100%;
+  max-width:900px;
+}
 
-    .categories{
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
-      gap:10px;
-      margin-bottom:25px;
-    }
+.title{
+  text-align:center;
+  margin-bottom:15px;
+  font-size:3rem;
+}
 
-    .categories button{
-      background:#1e293b;
-      color:white;
-      border:none;
-      padding:12px 18px;
-      border-radius:12px;
-      cursor:pointer;
-      transition:0.3s;
-    }
+.subtitle{
+  text-align:center;
+  color:#94a3b8;
+  margin-bottom:30px;
+}
 
-    .categories button:hover{
-      background:#2563eb;
-    }
+.categories{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+  margin-bottom:25px;
+}
 
-    .fact-card{
-      background:rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.1);
-      border-radius:24px;
-      padding:50px 30px;
-      margin-bottom:25px;
-      backdrop-filter:blur(10px);
-    }
+.categories button{
+  background:#1e293b;
+  border:none;
+  color:white;
+  padding:12px 18px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.3s;
+}
 
-    #fact{
-      font-size:1.8rem;
-      line-height:1.6;
-    }
+.categories button:hover{
+  background:#2563eb;
+}
 
-    .buttons{
-      display:flex;
-      justify-content:center;
-      gap:15px;
-      flex-wrap:wrap;
-    }
+.fact-box{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;
+  padding:40px;
+  margin-bottom:25px;
+  min-height:220px;
+}
 
-    .generate-btn{
-      background:#2563eb;
-      color:white;
-      border:none;
-      padding:15px 30px;
-      border-radius:16px;
-      font-size:1rem;
-      cursor:pointer;
-      transition:0.3s;
-    }
+#fact{
+  font-size:1.6rem;
+  line-height:1.7;
+  margin-bottom:25px;
+}
 
-    .generate-btn:hover{
-      background:#1d4ed8;
-      transform:scale(1.05);
-    }
+#details{
+  color:#cbd5e1;
+  line-height:1.7;
+  font-size:1rem;
+}
 
-    .small-btn{
-      width:55px;
-      height:55px;
-      border:none;
-      border-radius:50%;
-      background:#1e293b;
-      color:white;
-      cursor:pointer;
-      font-size:1.2rem;
-      transition:0.3s;
-    }
+.buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  justify-content:center;
+}
 
-    .small-btn:hover{
-      background:#334155;
-      transform:scale(1.1);
-    }
+.buttons button{
+  border:none;
+  cursor:pointer;
+  transition:0.3s;
+}
 
-    .counter{
-      margin-top:20px;
-      color:#94a3b8;
-    }
+.generate-btn{
+  background:#2563eb;
+  color:white;
+  padding:15px 30px;
+  border-radius:16px;
+  font-size:1rem;
+}
 
-    @media(max-width:768px){
+.generate-btn:hover{
+  background:#1d4ed8;
+}
 
-      h1{
-        font-size:2.2rem;
-      }
+.small-btn{
+  background:#1e293b;
+  color:white;
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  font-size:1rem;
+}
 
-      #fact{
-        font-size:1.3rem;
-      }
+.small-btn:hover{
+  background:#334155;
+}
 
-      .fact-card{
-        padding:35px 20px;
-      }
+.stats{
+  margin-top:25px;
+  text-align:center;
+  color:#94a3b8;
+  line-height:2;
+}
 
-    }
-  </style>
+@media(max-width:768px){
+
+  .title{
+    font-size:2.1rem;
+  }
+
+  #fact{
+    font-size:1.2rem;
+  }
+
+  .fact-box{
+    padding:25px;
+  }
+
+}
+
+</style>
 </head>
 <body>
 
-  <div class="container">
-
-    <h1>Infinite Amazing Facts</h1>
-
-    <p class="subtitle">
-      Discover 1000+ amazing facts instantly
-    </p>
-
-    <div class="categories">
-      <button type="button" data-category="science" onclick="setCategory('science')">Science</button>
-      <button type="button" data-category="animals" onclick="setCategory('animals')">Animals</button>
-      <button type="button" data-category="space" onclick="setCategory('space')">Space</button>
-      <button type="button" data-category="history" onclick="setCategory('history')">History</button>
-      <button type="button" data-category="technology" onclick="setCategory('technology')">Technology</button>
-    </div>
-
-    <div class="fact-card">
-      <p id="fact">
-        Click Generate Fact to begin.
-      </p>
-    </div>
-
-    <div class="buttons">
-
-      <button class="generate-btn" onclick="generateFact()">
-        Generate Fact
-      </button>
-
-      <button class="small-btn" onclick="copyFact()">
-        📋
-      </button>
-
-      <button class="small-btn" onclick="speakFact()">
-        🔊
-      </button>
-
-      <button class="small-btn" onclick="shareFact()">
-        🚀
-      </button>
-
-    </div>
-
-    <div class="counter">
-      Total Facts: <span id="count"></span>
-    </div>
-
-  </div>
-
-  <script>
-
-    let currentCategory = "science";
-
-    function setCategory(category){
-      currentCategory = category;
-      document.querySelectorAll(".categories button").forEach(btn => {
-        btn.classList.toggle(
-          "active",
-          btn.dataset.category === category
-        );
-      });
-    }
-
-    setCategory(currentCategory);
-
-    const baseFacts = {
-
-      science:[
-        "Lightning is hotter than the Sun.",
-        "Bananas are slightly radioactive.",
-       "Water can boil and freeze simultaneously.",
-      "The human brain generates electricity.",
-  "Sound travels faster underwater.",
-  "Glass behaves like a slow-moving liquid.",
-  "Humans share DNA with bananas.",
-  "A cloud can weigh millions of pounds.",
-  "Your stomach replaces its lining regularly.",
-  "Atoms are mostly empty space.",
-  "The human body contains tiny amounts of gold.",
-  "Hot water can freeze faster than cold water.",
-  "Volcanoes can create lightning.",
-  "DNA can survive for thousands of years.",
-  "The Earth is not perfectly round.",
-  "There are bacteria inside clouds.",
-  "The speed of light is extremely fast.",
-  "Some metals explode in water.",
-  "The human body glows slightly in darkness.",
-  "The ocean produces much of Earth’s oxygen.",
-  "A teaspoon of neutron star would weigh billions of tons.",
-  "Plants can communicate chemically.",
-  "Antibiotics do not work against viruses.",
-  "The human nose can remember thousands of smells.",
-  "There are more atoms in water than stars in the universe.",
-  "Some frogs can survive being frozen.",
-  "Electric eels generate electricity.",
-  "The Moon causes ocean tides.",
-  "Your bones are stronger than steel.",
-  "Sharks can detect electricity.",
-  "Blood is never blue inside the body.",
-  "A sneeze can travel very fast.",
-  "Your body contains trillions of cells.",
-  "The Earth rotates continuously.",
-  "Plants convert sunlight into energy.",
-  "Water expands when it freezes.",
-  "Diamonds are made of carbon.",
-  "Humans breathe oxygen constantly.",
-  "The Sun is a giant star.",
-  "Mercury is the closest planet to the Sun.",
-  "The Earth has a molten core.",
-  "Rainbows are caused by light refraction.",
-  "Bamboo grows extremely fast.",
-  "There are microscopic animals everywhere.",
-  "The brain uses a lot of energy.",
-  "Sound cannot travel in space.",
-  "Humans have unique fingerprints.",
-  "The atmosphere protects Earth from meteors.",
-  "Ice floats because it is less dense than water.",
-  "The heart pumps blood continuously.",
-  "Electricity powers many modern devices.",
-  "Some insects can walk on water.",
-  "The Earth orbits the Sun.",
-  "Plants release oxygen during photosynthesis.",
-  "The body repairs itself while sleeping.",
-  "There are millions of species on Earth.",
-  "Humans share much DNA with animals.",
-  "The Sun emits enormous energy.",
-  "Gravity keeps planets in orbit.",
-  "Earth’s atmosphere contains nitrogen.",
-  "Magnets have north and south poles.",
-  "Some fish produce light naturally.",
-  "The human eye detects many colors.",
-  "Lightning strikes Earth frequently.",
-  "Water covers most of Earth.",
-  "Volcanoes form new land.",
-  "The Earth has tectonic plates.",
-  "Bacteria exist almost everywhere.",
-  "Humans evolved over millions of years.",
-  "The Moon reflects sunlight.",
-  "Friction creates heat.",
-  "Some materials conduct electricity.",
-  "The Earth experiences seasons yearly.",
-  "DNA carries genetic information.",
-  "Sound waves travel through air.",
-  "Rain forms from condensed water vapor.",
-  "Some stars are larger than the Sun.",
-  "The Earth has one natural satellite.",
-  "Animals adapt to survive.",
-  "The atmosphere contains oxygen.",
-  "The brain controls body functions.",
-  "Cells are basic units of life.",
-  "The digestive system processes food.",
-  "Temperature affects chemical reactions.",
-  "Electric currents create magnetic fields.",
-  "The skeleton supports the body.",
-  "The nervous system sends signals.",
-  "Some plants eat insects.",
-  "Energy cannot be created or destroyed.",
-  "The Sun appears larger during sunrise.",
-  "Water is essential for life.",
-  "Humans are mammals.",
-  "The Earth’s crust constantly moves.",
-  "Light travels in waves.",
-  "Some bacteria are beneficial.",
-  "The eye adjusts to darkness.",
-  "Clouds are made of water droplets.",
-          "The lungs exchange oxygen and carbon dioxide.",
-          "The body maintains internal balance.",
-          "Many animals use camouflage.",
-          "The universe contains billions of galaxies.",
-          "Science helps explain natural phenomena."
-   ],
-
-      animals:[
-        "Octopuses have three hearts.",
-        "Sharks existed before trees.",
-        "Butterflies taste with their feet.",
-        "Koalas sleep up to 22 hours daily.",
-        "Sea otters hold hands while sleeping."
-      ],
-
-      space:[
-        "One day on Venus is longer than a year on Venus.",
-        "Space is completely silent.",
-        "Saturn could float in water.",
-        "Mars has the tallest volcano in the solar system.",
-        "There are more stars than grains of sand on Earth."
-      ],
-
-      history:[
-        "Oxford University is older than the Aztec Empire.",
-        "The shortest war lasted 38 minutes.",
-        "Napoleon was attacked by rabbits.",
-        "Vikings used bones as ice skates.",
-        "Ancient Romans used urine as toothpaste."
-      ],
-
-      technology:[
-        "The first computer bug was an actual bug.",
-        "The first website still exists.",
-        "Email existed before the internet.",
-        "The internet travels through underwater cables.",
-        "Smartphones are more powerful than old supercomputers."
-      ]
-
-    };
-
-    const prefixes = [
-      "Amazing fact:",
-      "Did you know?",
-      "Scientists discovered:",
-      "Fun fact:",
-      "Incredible fact:"
-    ];
-
-    const suffixes = [
-      "which surprises many people.",
-      "and it is completely true.",
-      "making it truly fascinating.",
-      "which sounds unbelievable.",
-      "and scientists still study it."
-    ];
-
-    const facts = {};
-
-    Object.keys(baseFacts).forEach(category => {
-
-      facts[category] = [];
-
-      for(let i = 0; i < 200; i++){
-
-        const base =
-          baseFacts[category][
-            i % baseFacts[category].length
-          ];
-
-        const prefix =
-          prefixes[i % prefixes.length];
-
-        const suffix =
-          suffixes[i % suffixes.length];
-
-        facts[category].push(
-          `${prefix} ${base} ${suffix}`
-        );
-
-      }
-
-    });
-
-    let totalFacts = 0;
-
-    Object.values(facts).forEach(arr => {
-      totalFacts += arr.length;
-    });
-
-    document.getElementById("count").innerText =
-      totalFacts + "+";
-
-    function generateFact(){
-
-      const categoryFacts =
-        facts[currentCategory];
-
-      const randomIndex =
-        Math.floor(
-          Math.random() * categoryFacts.length
-        );
-
-      const randomFact =
-        categoryFacts[randomIndex];
-
-      const factElement =
-        document.getElementById("fact");
-
-      factElement.style.opacity = 0;
-
-      setTimeout(() => {
-
-        factElement.innerText = randomFact;
-
-        factElement.style.opacity = 1;
-
-      },200);
-
-    }
-
-    function copyFact(){
-
-      const fact =
-        document.getElementById("fact").innerText;
-
-      navigator.clipboard.writeText(fact);
-
-      alert("Fact copied!");
-
-    }
-
-    function speakFact(){
-
-      const fact =
-        document.getElementById("fact").innerText;
-
-      const speech =
-        new SpeechSynthesisUtterance(fact);
-
-      speechSynthesis.speak(speech);
-
-    }
-
-    async function shareFact(){
-
-      const fact =
-        document.getElementById("fact").innerText;
-
-      if(navigator.share){
-
-        await navigator.share({
-          title:"Amazing Fact",
-          text:fact
-        });
-
-      }else{
-
-        alert("Sharing not supported.");
-
-      }
-
-    }
-
-  </script>
+<div class="container">
+
+<h1 class="title">Smart Infinite Facts Generator</h1>
+
+<p class="subtitle">
+Generate new facts without repetition
+</p>
+
+<div class="categories">
+
+<button onclick="setCategory('science')">
+Science
+</button>
+
+<button onclick="setCategory('animals')">
+Animals
+</button>
+
+<button onclick="setCategory('space')">
+Space
+</button>
+
+<button onclick="setCategory('history')">
+History
+</button>
+
+<button onclick="setCategory('technology')">
+Technology
+</button>
+
+</div>
+
+<div class="fact-box">
+
+<div id="fact">
+Click Generate Fact
+</div>
+
+<div id="details">
+Detailed explanation will appear here.
+</div>
+
+</div>
+
+<div class="buttons">
+
+<button class="generate-btn" onclick="generateFact()">
+Generate Fact
+</button>
+
+<button class="small-btn" onclick="copyFact()">
+📋
+</button>
+
+<button class="small-btn" onclick="speakFact()">
+🔊
+</button>
+
+<button class="small-btn" onclick="resetCache()">
+♻️
+</button>
+
+</div>
+
+<div class="stats">
+
+<div>
+Viewed Facts:
+<span id="viewedCount">0</span>
+</div>
+
+<div>
+Remaining Facts:
+<span id="remainingCount">0</span>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let currentCategory = "science";
+
+function setCategory(category){
+  currentCategory = category;
+  updateStats();
+}
+
+const facts = {
+
+science:[
+
+{
+short:"Lightning is hotter than the Sun.",
+detail:"Lightning can reach temperatures around 30,000 Kelvin, which is several times hotter than the Sun’s surface."
+},
+
+{
+short:"Bananas are slightly radioactive.",
+detail:"Bananas contain potassium, including a tiny amount of radioactive potassium-40."
+},
+
+{
+short:"Water can boil and freeze simultaneously.",
+detail:"This happens at the triple point where pressure and temperature allow all states together."
+},
+
+{
+short:"The human brain generates electricity.",
+detail:"Brain cells communicate using electrical impulses throughout the nervous system."
+},
+
+{
+short:"Sound travels faster underwater.",
+detail:"Water molecules are packed closer together than air molecules."
+}
+
+],
+
+animals:[
+
+{
+short:"Octopuses have three hearts.",
+detail:"Two hearts pump blood to the gills while one pumps blood to the body."
+},
+
+{
+short:"Sharks existed before trees.",
+detail:"Sharks are over 400 million years old while trees appeared later."
+},
+
+{
+short:"Butterflies taste with their feet.",
+detail:"Taste receptors on their feet help identify safe plants."
+},
+
+{
+short:"Sea otters hold hands while sleeping.",
+detail:"They do this to avoid drifting away from each other."
+},
+
+{
+short:"Koalas sleep up to 22 hours daily.",
+detail:"Their eucalyptus diet provides very low energy."
+}
+
+],
+
+space:[
+
+{
+short:"One day on Venus is longer than a year.",
+detail:"Venus rotates very slowly compared to its orbit around the Sun."
+},
+
+{
+short:"Space is completely silent.",
+detail:"There is no atmosphere in space to carry sound waves."
+},
+
+{
+short:"Saturn could float in water.",
+detail:"Saturn’s density is lower than water."
+},
+
+{
+short:"Mars has the tallest volcano.",
+detail:"Olympus Mons is the largest volcano in the solar system."
+},
+
+{
+short:"Footprints on the Moon last millions of years.",
+detail:"There is almost no wind or water erosion on the Moon."
+}
+
+],
+
+history:[
+
+{
+short:"Oxford University is older than the Aztec Empire.",
+detail:"Teaching at Oxford began centuries before the Aztec civilization formed."
+},
+
+{
+short:"The shortest war lasted 38 minutes.",
+detail:"The Anglo-Zanzibar War happened in 1896."
+},
+
+{
+short:"Napoleon was attacked by rabbits.",
+detail:"A rabbit hunt reportedly turned chaotic when rabbits charged at him."
+},
+
+{
+short:"Ancient Romans used urine as toothpaste.",
+detail:"Ammonia in urine was believed to clean teeth."
+},
+
+{
+short:"The Eiffel Tower grows in summer.",
+detail:"Heat causes the metal structure to expand."
+}
+
+],
+
+technology:[
+
+{
+short:"The first computer bug was a real bug.",
+detail:"A moth trapped inside a computer caused malfunction in 1947."
+},
+
+{
+short:"The first website still exists.",
+detail:"It was created by Tim Berners-Lee and remains online."
+},
+
+{
+short:"Email existed before the internet.",
+detail:"Electronic messaging systems existed on early networks."
+},
+
+{
+short:"The internet travels through underwater cables.",
+detail:"Most global internet data moves through fiber optic ocean cables."
+},
+
+{
+short:"Smartphones are stronger than old supercomputers.",
+detail:"Modern phones exceed the computing power of many early supercomputers."
+}
+
+]
+
+};
+
+let usedFacts =
+JSON.parse(localStorage.getItem("usedFacts")) || [];
+
+function generateFact(){
+
+const availableFacts =
+facts[currentCategory].filter(
+fact => !usedFacts.includes(fact.short)
+);
+
+if(availableFacts.length === 0){
+
+document.getElementById("fact").innerText =
+"No new facts remaining in this category.";
+
+document.getElementById("details").innerText =
+"Reset cache to see facts again.";
+
+return;
+
+}
+
+const randomFact =
+availableFacts[
+Math.floor(Math.random() * availableFacts.length)
+];
+
+usedFacts.push(randomFact.short);
+
+localStorage.setItem(
+"usedFacts",
+JSON.stringify(usedFacts)
+);
+
+document.getElementById("fact").innerText =
+randomFact.short;
+
+document.getElementById("details").innerText =
+randomFact.detail;
+
+updateStats();
+
+}
+
+function updateStats(){
+
+const viewed = usedFacts.length;
+
+const total =
+facts[currentCategory].length;
+
+const remaining =
+facts[currentCategory].filter(
+fact => !usedFacts.includes(fact.short)
+).length;
+
+document.getElementById("viewedCount").innerText =
+viewed;
+
+document.getElementById("remainingCount").innerText =
+remaining;
+
+}
+
+function copyFact(){
+
+const text =
+document.getElementById("fact").innerText
++
+" "
++
+document.getElementById("details").innerText;
+
+navigator.clipboard.writeText(text);
+
+alert("Fact copied!");
+
+}
+
+function speakFact(){
+
+const text =
+document.getElementById("fact").innerText
++
+". "
++
+document.getElementById("details").innerText;
+
+const speech =
+new SpeechSynthesisUtterance(text);
+
+speechSynthesis.speak(speech);
+
+}
+
+function resetCache(){
+
+const password =
+prompt("Enter reset password");
+
+if(password === "1234"){
+
+localStorage.clear();
+
+usedFacts = [];
+
+alert("Cache reset successful");
+
+updateStats();
+
+}else{
+
+alert("Wrong password");
+
+}
+
+}
+
+updateStats();
+
+</script>
 
 </body>
 </html>
