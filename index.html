@@ -1,116 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title> Facts Generator for chetah</title>
-
-<style>
-
-body{
-margin:0;
-font-family:Arial;
-background:#0f172a;
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-}
-
-.login-box,
-.main-box{
-background:#1e293b;
-padding:40px;
-border-radius:20px;
-width:90%;
-max-width:700px;
-text-align:center;
-box-shadow:0 0 20px rgba(0,0,0,0.4);
-}
-
-h1{
-margin-bottom:20px;
-}
-
-input{
-width:100%;
-padding:15px;
-border:none;
-border-radius:10px;
-margin-bottom:20px;
-font-size:16px;
-outline:none;
-}
-
-button{
-padding:15px 25px;
-border:none;
-border-radius:10px;
-background:#2563eb;
-color:white;
-font-size:16px;
-cursor:pointer;
-}
-
-button:hover{
-background:#1d4ed8;
-}
-
-#fact{
-margin-top:30px;
-font-size:24px;
-line-height:1.6;
-}
-
-#error{
-color:red;
-margin-top:10px;
-}
-
-.main-box{
-display:none;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Fact Generator with Access Protection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 550px;
+            width: 90%;
+        }
+        #fact {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            min-height: 60px;
+            color: #333;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        button {
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+        /* Passcode Area Styling Layout */
+        #passwordScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        #passwordScreen input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 250px;
+            text-align: center;
+        }
+        #errorMessage {
+            color: #dc3545;
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
+        /* Hide sections programmatically */
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
 
-<div class="login-box" id="loginBox">
+<div class="container">
+    <!-- Password Verification Section Layer -->
+    <div id="passwordScreen">
+        <h2>Enter Password to Access</h2>
+        <input type="password" id="passInput" placeholder="Password Here...">
+        <button class="btn-primary" onclick="checkPassword()">Unlock Page</button>
+        <div id="errorMessage"></div>
+    </div>
 
-<h1>Enter Password</h1>
-
-<input type="password" id="password" placeholder="Enter Password">
-
-<button onclick="login()">
-Login
-</button>
-
-<div id="error"></div>
-
-</div>
-
-<div class="main-box" id="mainBox">
-
-<h1>Ultimate Facts Generator</h1>
-
-<button onclick="generateFact()">
-Generate Fact
-</button>
-
-<div id="fact">
-Click button to generate fact
-</div>
-
+    <!-- Hidden Core Application Layout Screen -->
+    <div id="appScreen" class="hidden">
+        <div id="fact">Click the button below to display an amazing fact!</div>
+        <div class="btn-group">
+            <button class="btn-primary" onclick="getNewFact()">Get New Fact</button>
+            <button class="btn-danger" onclick="resetFactHistory()">Reset History</button>
+        </div>
+    </div>
 </div>
 
 <script>
+// Master System Password Key Token
+const MASTER_PASSWORD = "admin123";
 
-const PASSWORD = "1234";
-
+// Core Data Asset Database
 const facts = [
-
   "A day on Mercury lasts approximately 59 Earth days, while its year takes only 88 Earth days.",
   "The footprint left by astronauts on the Moon will likely last for millions of years due to the lack of wind.",
   "There is a giant cloud of alcohol floating in Sagittarius B2, a region near the center of our galaxy.",
@@ -419,60 +418,36 @@ const facts = [
   "The historical invention of the mechanical clock allowed communities to regulate daily schedules independent of solar cycles.",
   "The common standard acoustic piano produces sound via small felt-covered hammers striking high-tension steel strings.",
   "The historical city of Teotihuacan featured a massive urban grid layout centered around the Pyramid of the Sun."
-]
 ];
 
+// Array to track facts already shown
 let usedFacts = [];
 
-function login(){
-
-const enteredPassword =
-document.getElementById("password").value;
-
-if(enteredPassword === PASSWORD){
-
-document.getElementById("loginBox").style.display = "none";
-
-document.getElementById("mainBox").style.display = "block";
-
-}else{
-
-document.getElementById("error").innerText =
-"Wrong Password";
-
+// Function to verify input password
+function checkPassword() {
+    const userInput = document.getElementById("passInput").value;
+    const errorDiv = document.getElementById("errorMessage");
+    
+    if (userInput === MASTER_PASSWORD) {
+        document.getElementById("passwordScreen").classList.add("hidden");
+        document.getElementById("appScreen").classList.remove("hidden");
+        errorDiv.innerText = ""; 
+    } else {
+        errorDiv.innerText = "Incorrect Password! Try again.";
+        document.getElementById("passInput").value = "";
+    }
 }
 
-}
+// Function to generate facts
+function getNewFact() {
+    const availableFacts = facts.filter(
+        fact => !usedFacts.includes(fact)
+    );
 
-function generateFact(){
+    if (availableFacts.length === 0) {
+        document.getElementById("fact").innerText = "No more facts remaining. Click 'Reset History' to restart!";
+        return;
+    }
 
-const availableFacts =
-facts.filter(
-fact => !usedFacts.includes(fact)
-);
-
-if(availableFacts.length === 0){
-
-document.getElementById("fact").innerText =
-"No more facts remaining.";
-
-return;
-
-}
-
-const randomFact =
-availableFacts[
-Math.floor(Math.random() * availableFacts.length)
-];
-
-usedFacts.push(randomFact);
-
-document.getElementById("fact").innerText =
-randomFact;
-
-}
-
-</script>
-
-</body>
-</html>
+    const randomFact = availableFacts[
+        Math.floor(Math.random() * availableFacts.length)
