@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Fact Generator with Access Protection</title>
+    <title>Global Synced Fact Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,7 +20,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            max-width: 550px;
+            max-width: 500px;
             width: 90%;
         }
         #fact {
@@ -29,86 +29,47 @@
             min-height: 60px;
             color: #333;
         }
-        .btn-group {
+        .button-group {
             display: flex;
             justify-content: center;
             gap: 10px;
         }
         button {
+            color: white;
             border: none;
             padding: 10px 20px;
             font-size: 1rem;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: opacity 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
         }
         .btn-primary {
             background-color: #007bff;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
         }
         .btn-danger {
             background-color: #dc3545;
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #bd2130;
-        }
-        /* Passcode Area Styling Layout */
-        #passwordScreen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        #passwordScreen input {
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 80%;
-            max-width: 250px;
-            text-align: center;
-        }
-        #errorMessage {
-            color: #dc3545;
-            font-size: 0.9rem;
-            min-height: 20px;
-        }
-        /* Hide sections programmatically */
-        .hidden {
-            display: none !important;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Password Verification Section Layer -->
-    <div id="passwordScreen">
-        <h2>Enter Password to Access</h2>
-        <input type="password" id="passInput" placeholder="Password Here...">
-        <button class="btn-primary" onclick="checkPassword()">Unlock Page</button>
-        <div id="errorMessage"></div>
-    </div>
-
-    <!-- Hidden Core Application Layout Screen -->
-    <div id="appScreen" class="hidden">
-        <div id="fact">Click the button below to display an amazing fact!</div>
-        <div class="btn-group">
-            <button class="btn-primary" onclick="getNewFact()">Get New Fact</button>
-            <button class="btn-danger" onclick="resetFactHistory()">Reset History</button>
-        </div>
+    <div id="fact">Connecting to global sync server...</div>
+    <div class="button-group">
+        <button class="btn-primary" onclick="getNewFact()">Get New Fact</button>
+        <button class="btn-danger" onclick="resetFacts()">Reset App</button>
     </div>
 </div>
 
-<script>
-// Master System Password Key Token
-const MASTER_PASSWORD = "admin123";
+<!-- Core Firebase SDK Modules -->
+<script src="gstatic.com"></script>
+<script src="gstatic.com"></script>
 
-// Core Data Asset Database
+<script>
+// The complete array of 300 unique facts
 const facts = [
   "A day on Mercury lasts approximately 59 Earth days, while its year takes only 88 Earth days.",
   "The footprint left by astronauts on the Moon will likely last for millions of years due to the lack of wind.",
@@ -420,34 +381,47 @@ const facts = [
   "The historical city of Teotihuacan featured a massive urban grid layout centered around the Pyramid of the Sun."
 ];
 
-// Array to track facts already shown
+// Firebase Configuration Link
+const firebaseConfig = {
+    databaseURL: "https://fact-creator-293f7-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+
+// Initialize Firebase App Instance
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const usedFactsRef = database.ref("globalUsedFacts");
+
 let usedFacts = [];
 
-// Function to verify input password
-function checkPassword() {
-    const userInput = document.getElementById("passInput").value;
-    const errorDiv = document.getElementById("errorMessage");
+// Listen for global data updates across all users in real-time
+usedFactsRef.on("value", (snapshot) => {
+    const data = snapshot.val();
+    usedFacts = data ? Object.values(data) : [];
     
-    if (userInput === MASTER_PASSWORD) {
-        document.getElementById("passwordScreen").classList.add("hidden");
-        document.getElementById("appScreen").classList.remove("hidden");
-        errorDiv.innerText = ""; 
-    } else {
-        errorDiv.innerText = "Incorrect Password! Try again.";
-        document.getElementById("passInput").value = "";
+    // Set landing text once initialized
+    if (document.getElementById("fact").innerText === "Connecting to global sync server...") {
+        document.getElementById("fact").innerText = "Click the button below to display an amazing fact!";
     }
-}
+});
 
-// Function to generate facts
 function getNewFact() {
     const availableFacts = facts.filter(
         fact => !usedFacts.includes(fact)
     );
 
     if (availableFacts.length === 0) {
-        document.getElementById("fact").innerText = "No more facts remaining. Click 'Reset History' to restart!";
+        document.getElementById("fact").innerText = "No more facts remaining globally.";
         return;
     }
 
     const randomFact = availableFacts[
         Math.floor(Math.random() * availableFacts.length)
+    ];
+
+    // Push selection to cloud database (instantly syncs with everyone else)
+    usedFactsRef.push(randomFact);
+    document.getElementById("fact").innerText = randomFact;
+}
+
+function resetFacts() {
+    const password
