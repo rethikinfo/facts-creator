@@ -1,519 +1,460 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Smart Infinite Facts Generator</title>
+<title> Facts Generator for chetah</title>
 
 <style>
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
 body{
-  font-family:Arial,sans-serif;
-  background:#0f172a;
-  color:white;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
 
-.container{
-  width:100%;
-  max-width:900px;
+.login-box,
+.main-box{
+background:#1e293b;
+padding:40px;
+border-radius:20px;
+width:90%;
+max-width:700px;
+text-align:center;
+box-shadow:0 0 20px rgba(0,0,0,0.4);
 }
 
-.title{
-  text-align:center;
-  margin-bottom:15px;
-  font-size:3rem;
+h1{
+margin-bottom:20px;
 }
 
-.subtitle{
-  text-align:center;
-  color:#94a3b8;
-  margin-bottom:30px;
+input{
+width:100%;
+padding:15px;
+border:none;
+border-radius:10px;
+margin-bottom:20px;
+font-size:16px;
+outline:none;
 }
 
-.categories{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  justify-content:center;
-  margin-bottom:25px;
+button{
+padding:15px 25px;
+border:none;
+border-radius:10px;
+background:#2563eb;
+color:white;
+font-size:16px;
+cursor:pointer;
 }
 
-.categories button{
-  background:#1e293b;
-  border:none;
-  color:white;
-  padding:12px 18px;
-  border-radius:12px;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.categories button:hover{
-  background:#2563eb;
-}
-
-.fact-box{
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:24px;
-  padding:40px;
-  margin-bottom:25px;
-  min-height:220px;
+button:hover{
+background:#1d4ed8;
 }
 
 #fact{
-  font-size:1.6rem;
-  line-height:1.7;
-  margin-bottom:25px;
+margin-top:30px;
+font-size:24px;
+line-height:1.6;
 }
 
-#details{
-  color:#cbd5e1;
-  line-height:1.7;
-  font-size:1rem;
+#error{
+color:red;
+margin-top:10px;
 }
 
-.buttons{
-  display:flex;
-  flex-wrap:wrap;
-  gap:15px;
-  justify-content:center;
-}
-
-.buttons button{
-  border:none;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.generate-btn{
-  background:#2563eb;
-  color:white;
-  padding:15px 30px;
-  border-radius:16px;
-  font-size:1rem;
-}
-
-.generate-btn:hover{
-  background:#1d4ed8;
-}
-
-.small-btn{
-  background:#1e293b;
-  color:white;
-  width:55px;
-  height:55px;
-  border-radius:50%;
-  font-size:1rem;
-}
-
-.small-btn:hover{
-  background:#334155;
-}
-
-.stats{
-  margin-top:25px;
-  text-align:center;
-  color:#94a3b8;
-  line-height:2;
-}
-
-@media(max-width:768px){
-
-  .title{
-    font-size:2.1rem;
-  }
-
-  #fact{
-    font-size:1.2rem;
-  }
-
-  .fact-box{
-    padding:25px;
-  }
-
+.main-box{
+display:none;
 }
 
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="login-box" id="loginBox">
 
-<h1 class="title">Smart Infinite Facts Generator</h1>
+<h1>Enter Password</h1>
 
-<p class="subtitle">
-Generate new facts without repetition
-</p>
+<input type="password" id="password" placeholder="Enter Password">
 
-<div class="categories">
-
-<button onclick="setCategory('science')">
-Science
+<button onclick="login()">
+Login
 </button>
 
-<button onclick="setCategory('animals')">
-Animals
-</button>
-
-<button onclick="setCategory('space')">
-Space
-</button>
-
-<button onclick="setCategory('history')">
-History
-</button>
-
-<button onclick="setCategory('technology')">
-Technology
-</button>
+<div id="error"></div>
 
 </div>
 
-<div class="fact-box">
+<div class="main-box" id="mainBox">
 
-<div id="fact">
-Click Generate Fact
-</div>
+<h1>Ultimate Facts Generator</h1>
 
-<div id="details">
-Detailed explanation will appear here.
-</div>
-
-</div>
-
-<div class="buttons">
-
-<button class="generate-btn" onclick="generateFact()">
+<button onclick="generateFact()">
 Generate Fact
 </button>
 
-<button class="small-btn" onclick="copyFact()">
-📋
-</button>
-
-<button class="small-btn" onclick="speakFact()">
-🔊
-</button>
-
-<button class="small-btn" onclick="resetCache()">
-♻️
-</button>
-
-</div>
-
-<div class="stats">
-
-<div>
-Viewed Facts:
-<span id="viewedCount">0</span>
-</div>
-
-<div>
-Remaining Facts:
-<span id="remainingCount">0</span>
-</div>
-
+<div id="fact">
+Click button to generate fact
 </div>
 
 </div>
 
 <script>
 
-let currentCategory = "science";
+const PASSWORD = "1234";
 
-function setCategory(category){
-  currentCategory = category;
-  updateStats();
-}
+const facts = [
 
-
-const facts = {
-
-science: [
-
-"Lightning is hotter than the surface of the Sun.",
-"Bananas are naturally radioactive.",
-"Water can boil and freeze at the same time.",
-"The human brain generates electricity.",
-"Sound travels faster underwater.",
-"Atoms are mostly empty space.",
-"The Earth is not perfectly round.",
-"There are bacteria inside clouds.",
-"Hot water can freeze faster than cold water.",
-"The human body glows faintly in darkness.",
-"Volcanoes can create lightning.",
-"The Moon causes ocean tides.",
-"Glass is made from sand.",
-"The Sun contains most of the solar system’s mass.",
-"Some metals explode in water.",
-"The human nose remembers thousands of smells.",
-"Your body contains tiny amounts of gold.",
-"Plants communicate chemically.",
-"Electric eels generate electricity.",
-"Water expands when it freezes.",
-"The Earth constantly moves through space.",
-"Diamonds are made from carbon.",
-"DNA can survive for thousands of years.",
-"The atmosphere protects Earth from meteors.",
-"Ice floats because it is less dense than water.",
-"The Earth has a molten core.",
-"Some bacteria survive in space.",
-"Rainbows are caused by light refraction.",
-"Friction creates heat.",
-"Some materials conduct electricity.",
-"The body repairs itself while sleeping.",
-"The Earth has moving tectonic plates.",
-"The ocean creates much of Earth’s oxygen.",
-"The brain uses huge amounts of energy.",
-"Humans share DNA with bananas.",
-"Magnets have invisible fields.",
-"Some frogs survive freezing.",
-"The Sun is a giant star.",
-"The Earth experiences seasons yearly.",
-"DNA carries genetic information."
-
-],
-
-space: [
-
-"One day on Venus is longer than its year.",
-"Space is completely silent.",
-"Saturn could float in water.",
-"Mars has the tallest volcano.",
-"Footprints on the Moon last millions of years.",
-"The Moon slowly moves away from Earth.",
-"Black holes bend light.",
-"Jupiter has giant storms.",
-"The Milky Way contains billions of stars.",
-"Astronauts grow taller in space.",
-"Venus spins backwards.",
-"Some planets may rain diamonds.",
-"The Sun is white in space.",
-"The universe is constantly expanding.",
-"Mercury contains ice.",
-"The Moon has moonquakes.",
-"Neutron stars spin extremely fast.",
-"The coldest known place exists naturally in space.",
-"Some galaxies collide slowly.",
-"The Earth travels around the Sun rapidly.",
-"Stars produce enormous energy.",
-"Space smells like burnt metal.",
-"Saturn’s rings are mostly ice.",
-"The Sun is millions of years old.",
-"Some stars are bigger than the Sun.",
-"The universe contains billions of galaxies.",
-"Jupiter is the largest planet.",
-"Pluto is smaller than Earth’s Moon.",
-"Mars has blue sunsets.",
-"Comets contain ice and dust.",
-"The Moon reflects sunlight.",
-"Space has no oxygen.",
-"Some planets have dozens of moons.",
-"Gravity keeps planets in orbit.",
-"The Earth rotates constantly.",
-"The Sun’s gravity controls the solar system.",
-"The Moon affects tides.",
-"Some stars explode as supernovas.",
-"Galaxies contain black holes.",
-"The Earth is part of the Milky Way."
-
-],
-
-animals: [
-
-"Octopuses have three hearts.",
-"Sharks existed before trees.",
-"Butterflies taste using their feet.",
-"Sea otters hold hands while sleeping.",
-"Koalas sleep over 20 hours daily.",
-"A shrimp’s heart is in its head.",
-"Owls cannot move their eyeballs.",
-"Cows form close friendships.",
-"Dolphins have unique names.",
-"Penguins propose with pebbles.",
-"Sloths hold breath longer than dolphins.",
-"Wombat poop is cube-shaped.",
-"Jellyfish existed before dinosaurs.",
-"Elephants recognize themselves in mirrors.",
-"Some frogs survive freezing.",
-"Ravens solve puzzles.",
-"Some fish climb trees.",
-"Birds are living dinosaurs.",
-"Polar bears have black skin.",
-"Snails can sleep for years.",
-"Bees communicate through dancing.",
-"Cats sleep most of the day.",
-"Some snakes can fly.",
-"Camels store fat instead of water.",
-"Ants can carry many times their weight.",
-"Some spiders use electricity to fly.",
-"Parrots learn hundreds of words.",
-"Some sharks glow in darkness.",
-"Sea horses mate for life.",
-"Some crabs walk sideways.",
-"Frogs absorb water through skin.",
-"Some fish generate electricity.",
-"Owls rotate heads widely.",
-"Tigers have striped skin.",
-"Some birds mimic chainsaws.",
-"Crocodiles existed with dinosaurs.",
-"Dolphins are highly intelligent.",
-"Some insects walk on water.",
-"Penguins cannot fly.",
-"Some animals glow naturally."
-
-],
-
-history: [
-
-"Oxford University is older than the Aztec Empire.",
-"The shortest war lasted 38 minutes.",
-"Napoleon was attacked by rabbits.",
-"Ancient Romans used urine as toothpaste.",
-"Cleopatra lived closer to modern times than pyramid building.",
-"Pirates wore earrings for superstition.",
-"Ancient Egyptians loved board games.",
-"The Eiffel Tower grows during summer.",
-"The Great Fire helped stop plague spread.",
-"Ancient Greeks invented vending machines.",
-"The first alarm clock rang only at 4 AM.",
-"Roman concrete survives underwater.",
-"Books were chained in medieval libraries.",
-"The Titanic had a swimming pool.",
-"The pyramids were once shiny white.",
-"Ancient people used bread as plates.",
-"Some maps included sea monsters.",
-"Romans used heated floors.",
-"Ancient Egyptians slept on stone pillows.",
-"The oldest joke is over 4000 years old.",
-"Ancient Greeks used yo-yos.",
-"Ancient Romans used dolphins while fishing.",
-"The first Olympics awarded olive wreaths.",
-"Knights fought with unusual weapons.",
-"Some castles had secret tunnels.",
-"The first paper came from China.",
-"Ancient libraries stored thousands of scrolls.",
-"The Great Wall took centuries to build.",
-"Ancient ships crossed huge oceans.",
-"The printing press changed history.",
-"The compass improved navigation.",
-"The first clocks used water.",
-"Some kings kept exotic animals.",
-"Ancient cities had drainage systems.",
-"People once believed tomatoes were poisonous.",
-"The first calendars tracked moon cycles.",
-"Some emperors kept pet lions.",
-"Ancient roads connected empires.",
-"Pirates sometimes followed strict rules.",
-"The pyramids required huge labor forces."
-
-],
-
- technology : [
-
-"The first computer bug was a real bug.",
-"The first website still exists.",
-"Email existed before the internet.",
-"The internet uses underwater cables.",
-"Smartphones are stronger than old supercomputers.",
-"The first webcam watched coffee.",
-"The first computer mouse was wooden.",
-"QR codes were invented for factories.",
-"Cloud storage uses physical servers.",
-"3D printers can build houses.",
-"The first mobile phone was heavy.",
-"AI can generate realistic voices.",
-"The first YouTube video still exists.",
-"The first television remotes used wires.",
-"The first barcode was used on gum.",
-"The inventor of LEGO was a carpenter.",
-"The microwave was discovered accidentally.",
-"The first programmer was a woman.",
-"The first camera needed hours for one photo.",
-"The first email was sent in 1971.",
-"The internet connects billions daily.",
-"Computers use binary language.",
-"Robots perform surgeries.",
-"Some cars drive themselves.",
-"Video games improve reaction speed.",
-"Modern phones contain powerful processors.",
-"The first TVs were black and white.",
-"Early computers filled rooms.",
-"Touchscreens changed smartphones.",
-"Some robots learn mistakes.",
-"Fiber optics use light signals.",
-"Search engines scan billions of pages.",
-"Digital storage replaced floppy disks.",
-"The first hard drive stored little data.",
-"WiFi uses radio waves.",
-"Satellites provide GPS navigation.",
-"Modern AI creates images.",
-"Streaming changed entertainment.",
-"The first laptops were very expensive.",
-"Technology evolves rapidly."
-
+  "A day on Mercury lasts approximately 59 Earth days, while its year takes only 88 Earth days.",
+  "The footprint left by astronauts on the Moon will likely last for millions of years due to the lack of wind.",
+  "There is a giant cloud of alcohol floating in Sagittarius B2, a region near the center of our galaxy.",
+  "The planet HD 189733b experiences glass rain that blows sideways at speeds of 7,000 kilometers per hour.",
+  "Sound cannot travel through a vacuum, but radio waves can be converted into sound frequencies by instruments.",
+  "If two pieces of the same type of metal touch in space, they will permanently bond together through cold welding.",
+  "The Sun accounts for roughly 99.86% of the total mass of our entire solar system.",
+  "A cosmic year is the time it takes the solar system to orbit the center of the Milky Way galaxy once.",
+  "Gamma-ray bursts can release more energy in 10 seconds than our Sun will emit in its entire 10-billion-year lifespan.",
+  "The largest known volcano in the solar system is Olympus Mons, located on the planet Mars.",
+  "Light from the farthest visible stars took over 13 billion years to travel through space to reach Earth.",
+  "A neutron star is so dense that a single sugar-cube-sized amount would weigh 100 million tons on Earth.",
+  "The temperature at the core of a newly formed neutron star can reach 100 billion Kelvin.",
+  "Neptune experiences supersonic winds that reach speeds faster than the speed of sound on Earth.",
+  "The universe contains more individual stars than there are grains of sand on all the beaches on Earth.",
+  "Black holes can warp the fabric of time and space so severely that light cannot escape their grasp.",
+  "The International Space Station travels at a speed of roughly 27,600 kilometers per hour.",
+  "Ursa Major is not a single constellation but contains an asterism known commonly as the Big Dipper.",
+  "The cosmic microwave background radiation is the literal thermal echo left over from the Big Bang.",
+  "Jupiter acts as a cosmic shield for Earth by deflecting incoming comets and asteroids with its mass.",
+  "Wombats are the only known animals in the world that produce distinctly cube-shaped feces.",
+  "Flamingos are not born pink; their feathers turn pink due to carotenoid pigments in their shrimp diet.",
+  "A single blue whale tongue can weigh as much as an entire adult elephant.",
+  "Cows have preferred companions within their herds and exhibit signs of stress when separated from them.",
+  "The Turritopsis dohrnii jellyfish can theoretically live forever by reverting its cells back to a juvenile state.",
+  "Sloths can take up to a full month to completely digest a single meal of leaves.",
+  "Honeybees can recognize individual human faces by stitching together visual components like a puzzle.",
+  "Male giraffes bump the bladders of female giraffes to taste their urine and determine if they are ready to mate.",
+  "Hummingbirds are the only known birds that possess the physical ability to fly backward.",
+  "An adult lion's roar is so loud it can be heard from a distance of five miles away.",
+  "Chameleons change their skin color primarily to regulate body temperature and communicate mood, not for camouflage.",
+  "A newborn kangaroo is roughly the size of a single jellybean when it crawls into the pouch.",
+  "Elephants are the only land mammals that are physically incapable of jumping off the ground.",
+  "The heart of a shrimp is located entirely inside the skeletal structure of its head.",
+  "A snail can regenerate a completely new eye if it happens to lose one to a predator.",
+  "Koalas possess individual fingerprints that are virtually identical to human fingerprints under a microscope.",
+  "Prairie dogs communicate using a highly complex language system that includes descriptive terms for predators.",
+  "A group of collective flamingos is officially referred to by biologists as a flamboyance.",
+  "The dynamic bite force of a grizzly bear is powerful enough to crush a solid bowling ball.",
+  "Crocodiles cannot stick their tongues out because a membrane firmly holds the organ to the bottom roof.",
+  "Teaching at Oxford University began in 1096, making the institution older than the entire Aztec Empire.",
+  "The mechanical lighter was invented in 1823, three years before the invention of friction matches.",
+  "The multi-national corporation Nintendo was founded in 1889 as a manufacturer of handmade playing cards.",
+  "The ancient city of Babylon featured walls so wide that chariots could race on top of them.",
+  "The Great Pyramid of Giza was originally covered in highly polished white limestone blocks that reflected sunlight.",
+  "The oldest known customer service complaint was written on a clay tablet in Mesopotamia regarding subpar copper.",
+  "Napoleon Bonaparte was not exceptionally short; he was of average height for a Frenchman of his era.",
+  "The concept of the zero as a mathematical number was independently developed by ancient Indian mathematicians.",
+  "The initial prototype of the computer mouse was constructed out of wood by inventor Douglas Engelbart.",
+  "The first commercial traffic light system was installed in Cleveland, Ohio, in the year 1914.",
+  "Before the invention of erasers, people used rolled-up pieces of moist white bread to remove graphite lines.",
+  "The iconic high heel shoe was originally designed for Persian cavalry soldiers to secure feet in stirrups.",
+  "The Great Fire of London in 1666 destroyed over 13,000 homes but killed fewer than ten people.",
+  "King Tutankhamun was buried with a dagger crafted from iron extracted directly from a fallen meteorite.",
+  "The pencil sharpener was invented decades after the pencil itself, requiring users to rely on knives.",
+  "Ancient Mayans used chocolate currency, exchanging cacao beans for goods and services in marketplace stalls.",
+  "The first operational public library opened in the ancient world within the city of Nineveh.",
+  "The signature yellow color of school buses was scientifically selected in 1939 for its rapid visibility.",
+  "The longest war in recorded human history lasted 335 years between the Netherlands and the Isles of Scilly.",
+  "The original draft of the United States Declaration of Independence was penned onto durable hemp paper.",
+  "A single teaspoon of a neutron star would weigh roughly six billion tons due to extreme density.",
+  "Human stomach acid is chemically potent enough to dissolve metallic steel razor blades within hours.",
+  "There are more individual atoms in a single glass of water than there are glasses of water on Earth.",
+  "The human eye iris features 256 unique geometric patterns, compared to only 40 for fingerprints.",
+  "Diamond is not the hardest substance; scientists created lonsdaleite, which is 58% harder under pressure.",
+  "Helium gas becomes a superfluid when cooled to absolute zero, allowing it to climb up container walls.",
+  "The unique element gallium will melt into a liquid state when held in the palm of a human hand.",
+  "About 20% of all the oxygen production on Earth is generated by the marine microscopic phytoplankton.",
+  "Sound travels roughly four times faster through liquid water than it does through open air atmospheric conditions.",
+  "DNA molecules are stable enough that genetic information can persist for tens of thousands of years.",
+  "The human body contains enough carbon content to manufacture roughly 9,000 standard graphite pencils.",
+  "Water expands by approximately 9% in total volume when transition states turn it into solid ice.",
+  "The element mercury is the only metallic element that remains in a liquid state at room temperature.",
+  "Dry ice is not frozen water; it is the solid state of carbon dioxide gas compressed under pressure.",
+  "The speed of light slows down significantly when passing through dense mediums like diamonds or glass.",
+  "Static electricity sparks can reach temperatures up to 30,000 degrees Fahrenheit for a fraction of a millisecond.",
+  "The air around a localized lightning strike expands explosively, creating the acoustic boom known as thunder.",
+  "Your body produces roughly one to two liters of saliva every single day to aid digestion.",
+  "The scientific name for the phenomenon of brain freeze caused by cold substances is sphenopalatine ganglioneurologia.",
+  "Human bones are dynamic living tissue that completely replaces itself structurally over a ten-year cycle.",
+  "The country of Canada contains more natural lake structures than the rest of the world combined.",
+  "The dry valleys of Antarctica have not received a single drop of rain or snow for two million years.",
+  "Russia has a larger surface geographic footprint than the entire surface area of the dwarf planet Pluto.",
+  "The country of Turkey is geographically situated across two distinct continental landmasses: Europe and Asia.",
+  "The city of Venice is constructed entirely on top of wooden stakes driven into the muddy lagoon floor.",
+  "The Amazon River discharges more volume of water than the next seven largest rivers combined together.",
+  "The geographic center of the African continent contains some of the richest biodiversity hotspots on Earth.",
+  "The Pacific Ocean is so vast that it is larger than all of Earth's continental landmasses combined.",
+  "The Atacama Desert in Chile is situated next to the ocean but remains the driest place on Earth.",
+  "The Dead Sea features a salt concentration so dense that humans naturally float without swimming.",
+  "The country of Iceland does not have a single mosquito population due to rapid temperature shifts.",
+  "The total length of the coastline of Alaska is longer than the coastlines of all other US states combined.",
+  "The island of Greenland is technically the world's largest island that is not a separate continent.",
+  "The city of Istanbul is the only metropolis in the world that spans across two distinct continents.",
+  "The Sahara Desert can experience sub-zero freezing temperatures during winter nights despite scorching daytimes.",
+  "The kingdom of Saudi Arabia does not contain a single permanent natural river flowing through its land.",
+  "The Andes mountain range forms the longest continental mountain chain across the surface of the globe.",
+  "The Great Barrier Reef is the largest singular living structure on Earth, visible from outer space.",
+  "The country of Mongolia has the lowest human population density of any independent nation on Earth.",
+  "The Nile River flows from south to north due to the sloping elevation gradients of African geography.",
+  "Some birds perfectly imitate the sound of hand-cranked chainsaws to deter territorial rivals.",
+  "The world’s oldest verified individual living tree is a Great Basin bristlecone pine over 4,800 years old.",
+  "Certain desert frogs survive multi-year droughts by spinning a water-tight mucus cocoon underground.",
+  "The solid iron core at the center of the Earth is nearly as hot as the surface temperature of the Sun.",
+  "The first commercially available portable laptops weighed over 20 pounds and cost thousands of dollars.",
+  "Some species of alpine insects can survive being chilled below freezing point without internal cellular damage.",
+  "Early daguerreotype cameras required subjects to sit perfectly still for up to half an hour for one exposure.",
+  "Giant underground caves can develop unique atmospheric cycles that create localized rain clouds inside chambers.",
+  "The first commercial computer hard drives in the 1950s required large cabinets to store just five megabytes.",
+  "The cumulative weight of a standard white cumulus cloud is estimated to be over one million pounds.",
+  "Geological records indicate that structural lineage of sharks predates the stellar formation of Saturn's rings.",
+  "The designer of the cylindrical Pringles potato crisp container requested his cremated remains be buried in one.",
+  "Deep cavern systems seal off ancient air pockets that remain completely isolated from modern atmospheric shifts.",
+  "The wild ancestors of modern cultivated sweet orange fruits were naturally bright green when fully ripe.",
+  "Ancient Roman emperors served flamingo tongues as an extreme status-symbol delicacy during formal state banquets.",
+  "Some species of tropical butterflies actively drink the tears of turtles to harvest vital dietary sodium.",
+  "The average human being spends roughly two cumulative weeks of their life practicing tying shoelaces.",
+  "Because the Moon has only one-sixth of Earth's gravity, an individual’s physical weight scales down proportionally.",
+  "Extreme hydrothermal vent fish species thrive in scalding deep-sea water currents exceeding 200 degrees Fahrenheit.",
+  "Thomas Edison tested more than 6,000 distinct carbonized plant filaments before finalizing his electric light bulb.",
+  "Certain species of migratory birds can sleep while in mid-air flight by keeping one brain hemisphere active.",
+  "Millions of years ago, prehistoric Earth was dominated by giant prototaxites mushrooms towering twenty feet high.",
+  "The earliest known photographic depiction of a constructed snowman dates back to the mid-1850s.",
+  "Decorator crabs systematically harvest living sea anemones and sponges to physically attach to their own shells.",
+  "Statistical projections indicate the average modern adult spends over a decade looking at digital screen displays.",
+  "The natural antibacterial property of honey allowed ancient Egyptian embalmers to use it for organic preservation.",
+  "Pit viper snakes use highly specialized facial pit organs to detect infrared heat signatures in pitch darkness.",
+  "The earliest known recorded motion picture sequence, the Roundhay Garden Scene, lasts just under two seconds.",
+  "The hyper-arid Sahara Desert experiences rare, localized snowfall events on high-elevation mountain peaks.",
+  "A typical overhead rain cloud holds billions of microscopic water droplets suspended by updraft currents.",
+  "Certain redwood tree species develop thick, fibrous bark layers explicitly designed to survive intense forest fires.",
+  "The earliest industrial vacuum cleaning machines were so massive they had to be hauled by horse-drawn wagons.",
+  "Field crickets process acoustic sound waves through auditory organs located directly on their front legs.",
+  "High-altitude atmospheric molecular interactions cause the upper layers of Earth’s sky to glow faintly at night.",
+  "Some species of small birds actively pluck hair from sleeping mammalian predators to line nesting areas.",
+  "Early pioneering photographers used dangerous chemical-coated glass plates instead of flexible film rolls.",
+  "Limnic eruptions can cause deep crater lakes to abruptly release massive clouds of suffocating trapped carbon gas.",
+  "Certain geological formations produce mud volcanoes that erupt liquid clay mixtures rather than molten rock lava.",
+  "The earliest public industrial railway networks relied strictly on high-pressure coal-powered steam locomotives.",
+  "The tuskfish displays tool-use behavior by intentionally slamming bivalve shells against rocks to crack them open.",
+  "Numerous ancient maritime cultures utilized polished marine cowrie shells as a standardized form of trade currency.",
+  "The female marsupial frog carries fertilized eggs inside specialized skin pouches located directly on her back.",
+  "The earliest recorded combat submarines in the American Revolutionary War were completely hand-powered by a single pilot.",
+  "Deep limestone cave ecosystems support highly specialized, completely blind fish species that lack optical nerves.",
+  "The Earth's geographic magnetic poles shift position by several miles every year due to core fluid dynamics.",
+  "Carnivorous pitcher plants use slippery interior walls to trap insects, digesting them for essential nitrogen.",
+  "The earliest public mechanical elevator installations in buildings terrified passengers who doubted the cable safety.",
+  "Bioluminescent dinoflagellates create a glowing neon-blue wave effect when agitated by breaking ocean surf.",
+  "Early mechanical calculating units were built with thousands of gears and occupied an entire office desk.",
+  "Humpback whales compose complex vocal songs that they alter and share across entire ocean populations.",
+  "Massive subglacial hydrology networks form active, flowing liquid rivers beneath thousands of feet of solid ice.",
+  "The larvae of the hydrothermal vent fly can survive temperatures close to boiling water without tissue death.",
+  "The earliest historical passports were simple letters signed by monarchs requesting safe passage for travelers.",
+  "The giant Rafflesia arnoldii flower generates a chemical scent mimicking rotting meat to attract carrion flies.",
+  "Some species of small jumping spiders alter their physical movement to perfectly mimic aggressive stinging ants.",
+  "The introduction of the commercial typewriter radically restructured the demographic layout of modern corporate offices.",
+  "Specific geological stalactite arrays create natural musical echoes when acoustic frequencies vibrate through caves.",
+  "The world's open oceans absorb an amount of thermal heat energy daily equivalent to millions of atomic explosions.",
+  "New Caledonian crows display cognitive problem-solving by shaping twigs into hooks to retrieve insects from wood.",
+  "The earliest chemical batteries, like the Voltaic Pile, stacked alternating zinc and copper disks separated by brine.",
+  "Certain species of archerfish can learn to visually distinguish between different individual human faces.",
+  "The hyper-arid regions of the Australian outback conceal massive, slow-moving artesian water basins underground.",
+  "Early pioneering radio broadcasts were initially viewed by the public as occult parlor tricks or magic tricks.",
+  "Certain species of walnut trees discharge toxic juglone chemicals into the soil to inhibit rival plant growth.",
+  "Operational orbital tracking data shows thousands of active artificial satellites circling the Earth simultaneously.",
+  "Leafcutter ant colonies operate structured underground agricultural farms dedicated entirely to cultivating specific fungus.",
+  "The public debut of the mechanical escalator at Harrods department store caused severe panic among patrons.",
+  "Male birds-of-paradise perform meticulously choreographed dance routines to visually attract potential female partners.",
+  "Pioneering aviation aircraft completely lacked enclosed cockpit shields, leaving pilots entirely exposed to wind elements.",
+  "Deep-sea amphipods discovered at the bottom of trenches utilize specialized copper-based blood to survive crushing pressure.",
+  "The structural tectonic plates of the Earth's crust literally float on a semi-fluid layer of hot mantle rock.",
+  "Deep-sea dragonfish possess specialized organs that produce a red light beam invisible to most other fish.",
+  "The earliest historical mechanical timekeeping devices tracked passing hours via regulated, dripping water tanks.",
+  "The distinct physiology of a decapitated housefly allows the insect to physically walk and groom itself for hours.",
+  "The development of early optical microscopes fundamentally overturned long-held medical theories of spontaneous generation.",
+  "The tectonic collision between India and Asia causes the Himalayan mountain range to grow taller every year.",
+  "Marine archaeologists estimate that the global seabed contains millions of unrecovered historic wooden shipwrecks.",
+  "The northern mockingbird can learn and accurately replicate the distinct audio patterns of modern car alarms.",
+  "The earliest commercial electronic television sets featured display screens measuring only a few inches wide.",
+  "The leaves of the Mimosa pudica plant physically collapse inward within seconds of being mechanically touched.",
+  "The earliest military rocket designs in ancient China utilized solid black gunpowder mixtures encased in bamboo tubes.",
+  "Blue whale vocalizations produce low-frequency acoustic pulses capable of traveling across entire open ocean basins.",
+  "Geological evidence confirms that massive primordial oceans once completely covered the surface of the planet.",
+  "The common basilisk lizard can physically run across the surface of open water pools using specialized webbed feet.",
+  "The emergence of early mechanized factories during the Industrial Revolution completely altered urban demographic layouts.",
+  "Subterranean exploration teams have documented massive cave systems that contain roaring waterfalls completely underground.",
+  "The layout of early mechanical computer keyboards was directly derived from the mechanical arrangement of typewriters.",
+  "Certain desert spadefoot toads can remain dormant buried deep underground for nearly a year without water access.",
+  "The planetary ozone layer acts as a critical shield by absorbing over 97% of high-frequency solar ultraviolet light.",
+  "The plainfin midshipman fish generates a loud, continuous humming noise underwater to establish nesting territory.",
+  "The earliest prototype safety bicycles lacked pneumatic rubber tires, making them incredibly jarring to steer.",
+  "Massive convective supercell storms generate cloud formations so tall they are easily tracked from Earth orbit.",
+  "The launch of early meteorological satellites fundamentally transformed the accuracy of modern long-range weather forecasting.",
+  "Certain alpine pine tree varieties possess root structures capable of splitting solid granite boulders over decades.",
+  "Seismological monitoring confirms that the Earth's inner core rotates at a different speed than the outer crust.",
+  "The arctic tern completes a migratory path from the Arctic to the Antarctic and back every single year.",
+  "Early corporate mainframe computing systems stored and executed programming instructions using physical paper punch cards.",
+  "The common sea star can completely regenerate a fully functional body from a single severed radial arm.",
+  "The earliest industrial automaton machines relied on complex internal cam systems to mimic human cursive writing.",
+  "Diving bell spiders construct localized underwater silk webs designed to trap and store vital surface air bubbles.",
+  "The original formulation of Coca-Cola was marketed by pharmacist John Pemberton as a patent medicine nerve tonic.",
+  "The initial computer mouse prototype constructed by Douglas Engelbart utilized two perpendicular internal metallic wheels.",
+  "Pure elemental gallium possesses a melting point low enough to transition into a liquid when placed on skin.",
+  "Archaeologists excavating Armenian cave sites discovered a perfectly preserved leather shoe dating back 5,500 years.",
+  "Ancient Roman laundry structures systematically collected human urine to utilize its natural ammonia for bleaching tunics.",
+  "The wood frog can survive the complete cessation of its heartbeat and respiration during sub-zero winter freezes.",
+  "The metabolic processes of the human body generate enough radiant thermal heat to boil a gallon of water in hours.",
+  "The largest officially recorded atmospheric ice crystal snowflake measured fifteen inches in total diameter across.",
+  "Genetic sequencing of Greenland sharks indicates that individual specimens can achieve lifespans exceeding four centuries.",
+  "The exosphere layer of the Earth's atmosphere thins out gradually, technically extending far past the Moon's orbit.",
+  "The lyrebird possesses highly advanced vocal muscles that allow it to replicate chainsaws, cameras, and human speech.",
+  "The modern digital ideogram icon known as the emoji was originally created for a Japanese mobile network in 1999.",
+  "Ancient Egyptian medical papyri document the use of specific moldy bread scraps to prevent infection in open wounds.",
+  "Adolphe Sax, the inventor of the saxophone, also drafted patents for massive military propulsion flamethrower units.",
+  "The earliest recreational roller skates featured rigid inline metal wheels that lacked steering mechanisms or brakes.",
+  "The electric knifefish transmits localized high-frequency electrical signals to communicate social status underwater.",
+  "The library of Al-Qarawiyyin in Morocco was founded in 859 AD, making it the oldest continually operating library.",
+  "Certain species of paradise tree snakes can aerodynamically flatten their ribcages to glide through forest canopies.",
+  "The earliest commercial mobile cellular phones featured bulky battery modules that provided under thirty minutes of talk time.",
+  "Orbital spectroscopic mapping reveals that solar wind interactions have formed localized iron oxide rust on the Moon.",
+  "Subterranean cave networks can harbor unique fungal and bacterial colonies that emit constant bioluminescent light.",
+  "The magnetosphere of the Earth acts as a primary deflection shield against high-energy cosmic solar radiation particles.",
+  "Early experimental television systems utilized rapidly spinning mechanical Nipkow disks to scan and transmit images.",
+  "Water striders leverage the natural surface tension of water molecules to skate across ponds without sinking.",
+  "The total iron content contained within an adult human body is sufficient to forge a standard two-inch nail.",
+  "Momofuku Ando invented instant ramen noodles in 1958 as a direct response to post-war food shortages in Japan.",
+  "Certain variable stars expand and contract their outer gas envelopes, pulsing like an interstellar heartbeat.",
+  "The National Toy Hall of Fame officially inducted the common tree stick into its collection as a universal toy.",
+  "When attacked by pests, certain willow trees emit airborne volatile pheromones to warn adjacent trees to produce toxins.",
+  "The historic Wright Flyer aircraft utilized wood framework construction laced together with standard bicycle spoke wires.",
+  "The carboniferous geological era featured massive atmospheric oxygen levels that allowed dragonflies to grow three feet wide.",
+  "The surface area of the planet Pluto is smaller than the total geographical landmass footprint of Russia.",
+  "A single mature oak tree can shed over ten thousand individual acorns during a single active autumn season.",
+  "The unique density properties of fresh water cause it to achieve its maximum weight density at exactly 3.98 degrees Celsius.",
+  "An individual bolt of cloud-to-ground lightning can generate currents exceeding one hundred million volts of electricity.",
+  "The complete absence of moisture in the Atacama Desert prevents organic decay, preserving centuries-old mummies naturally.",
+  "Marine biologists have determined that the blue whale can lower its heart rate to just two beats per minute while diving.",
+  "The global internet infrastructure relies primarily on deep-sea fiber optic cables laid across ocean floors.",
+  "The total mass of all the combined insect populations on Earth significantly outweighs the total mass of humanity.",
+  "The common garden caterpillar possesses over four thousand individual muscles compared to just over six hundred in humans.",
+  "The global geographic phenomenon known as the Ring of Fire contains over 75% of the world's active volcanoes.",
+  "The structural composition of regular window glass is technically an amorphous solid lacking a crystalline structure.",
+  "A specialized layer of ice crystals called diamond dust can form at ground level in extreme polar temperatures.",
+  "The physical rotation speed of the Earth is gradually slowing down due to tidal friction forces from the Moon.",
+  "The historic Eiffel Tower can contract by several inches during winter cold snaps due to kinetic thermal changes.",
+  "Certain species of deep-sea bacteria rely entirely on chemosynthesis around volcanic vents rather than solar energy.",
+  "The human brain generates enough low-voltage electrical signals daily to power a small electronic LED light bulb.",
+  "The distinct architecture of the historical city of Amsterdam rests entirely upon thousands of driven wooden foundation piles.",
+  "The historical Panama Canal utilizes a complex gravity-fed lock system that does not require water pumps to operate.",
+  "The physical weight of all the individual ants on Earth is roughly equal to the total weight of all humans.",
+  "The oldest known continuous written laws are found on the Code of Ur-Nammu, originating in ancient Mesopotamia.",
+  "The unique topography of Iceland means it possesses zero native snake species and very few native mammals.",
+  "The global deep-water oceanic conveyor belt currents take roughly one thousand years to complete one full circuit.",
+  "An adult human skeleton is comprised of 206 bones, whereas a newborn infant possesses roughly 270 bones.",
+  "The extreme atmospheric pressure on the planet Venus is equivalent to being nearly three thousand feet underwater on Earth.",
+  "The historical library of Alexandria utilized a mandatory policy of confiscating and copying books from arriving ships.",
+  "The distinct orange coloration of modern cultivated carrots was developed by Dutch breeders in the seventeenth century.",
+  "The common house gecko can detach its tail to distract pursuing predators, growing a replacement within weeks.",
+  "The historical Great Wall of China utilized a mortar mixture containing sticky rice to bind the stone blocks.",
+  "The total length of all the microscopic blood vessels in an adult human body could encircle the globe twice.",
+  "The planet Jupiter experiences massive, continuous cyclonic storms that are large enough to engulf the entire Earth.",
+  "The world's highest uninterrupted waterfall is Angel Falls in Venezuela, dropping over three thousand feet.",
+  "The specific chemical compound that gives old books their distinct sweet scent is a derivative of breaking wood lignin.",
+  "The common platypus lacks a traditional anatomical stomach, its esophagus connecting directly to its intestinal tract.",
+  "The historical invention of the printing press by Johannes Gutenberg dramatically lowered transcription costs across Europe.",
+  "The largest desert on the planet is technically Antarctica, defined by its extremely low annual precipitation rates.",
+  "The human olfactory system can distinguish between more than one trillion distinct chemical odor profiles.",
+  "The historic Leaning Tower of Pisa began to tilt almost immediately during its construction due to unstable subsoil.",
+  "The structural design of the common safety pin was invented and patented by Walter Hunt to pay off a fifteen-dollar debt.",
+  "The distinct texture of modern memory foam was originally engineered by NASA to improve crash protection in spacecraft.",
+  "The common honeybee must visit roughly two million flower blossoms to synthesize a single pound of honey.",
+  "The architectural complex of Machu Picchu was constructed by the Inca without the use of draft animals or iron tools.",
+  "The distinct ring patterns seen inside tree trunks vary in thickness depending on annual localized weather conditions.",
+  "The unique design of the modern zipper was perfected by Gideon Sundback after years of faulty hook-and-eye prototypes.",
+  "The common standard acoustic guitar produces sound amplification via mechanical vibrations passing through its hollow wooden body.",
+  "The historical city of Pompeii was preserved for centuries under a thick blanket of volcanic ash from Mount Vesuvius.",
+  "The average lifespan of a standard green dollar bill in active circulation is roughly six and a half years.",
+  "The specific sound produced by a cracking leather whip is a miniature sonic boom created by the tip breaking the sound barrier.",
+  "The specialized scales of the pangolin are made of keratin, the exact same structural protein found in human fingernails.",
+  "The historical construction of the Trans-Siberian Railway spans across eight distinct time zones across Russia.",
+  "The common garden earthworm possesses both male and female reproductive organs but still requires a mate to reproduce.",
+  "The unique composition of the Dead Sea prevents any marine fish or plant life from surviving in its waters.",
+  "The historical development of the modern wristwatch was accelerated by military coordination needs during the Boer War.",
+  "The total surface area of human lungs is roughly equivalent to the size of a standard tennis court.",
+  "The distinct chemical compound capsaicin causes Chili peppers to taste hot by triggering heat pain receptors in mammals.",
+  "The historical construction of the Brooklyn Bridge utilized pneumatic caissons that caused severe decompression sickness in workers.",
+  "The common laboratory mouse shares more than 85% of its genomic sequence with the human species.",
+  "The unique sound characteristics of a Stradivarius violin are believed to stem from high-density wood grown during a miniature ice age.",
+  "The historical introduction of the potato to Europe from South America radically decreased famine frequencies.",
+  "The specific speed of light through a vacuum is exactly 299,792,458 meters per second.",
+  "The common standard typewriter keyboard layout was engineered to separate common letter pairs to prevent mechanical jams.",
+  "The historical city of Petra was carved directly into vibrant red sandstone cliff faces by Nabataean architects.",
+  "The specific physical function of the human appendix is currently believed to store beneficial digestive gut bacteria.",
+  "The common standard microwave oven heats food items by utilizing electromagnetic waves to vibrate water molecules.",
+  "The historical construction of the Hoover Dam utilized massive internal cooling pipes to prevent the concrete from cracking.",
+  "The common migratory monarch butterfly traverses thousands of miles to reach specific wintering forests in Mexico.",
+  "The unique physical properties of liquid helium cause it to exhibit zero viscosity when cooled below 2.17 Kelvin.",
+  "The historical library system of ancient Rome included separate dedicated wings for Greek and Latin texts.",
+  "The distinct architecture of modern suspension bridges allows them to span massive distances by distributing tension forces.",
+  "The common standard mercury thermometer operates via predictable thermal expansion of the liquid metal column.",
+  "The historical development of early radar technology was originally intended to detect incoming military aircraft.",
+  "The common standard incandescent light bulb loses over 90% of its supplied electrical energy as radiant heat.",
+  "The historical construction of the Suez Canal radically altered global trade by connecting the Mediterranean directly to the Red Sea.",
+  "The common laboratory fruit fly was the first multi-cellular organism sent into space for genetic research.",
+  "The unique composition of modern stainless steel requires the intentional addition of chromium to prevent iron rust.",
+  "The historical invention of the mechanical clock allowed communities to regulate daily schedules independent of solar cycles.",
+  "The common standard acoustic piano produces sound via small felt-covered hammers striking high-tension steel strings.",
+  "The historical city of Teotihuacan featured a massive urban grid layout centered around the Pyramid of the Sun."
 ]
+];
 
-};
-function generateDetailedFacts(category, baseFacts) {
+let usedFacts = [];
 
-  for (let i = 1; i <= 20; i++) {
+function login(){
 
-    baseFacts.forEach((fact) => {
+const enteredPassword =
+document.getElementById("password").value;
 
-      facts[category].push({
+if(enteredPassword === PASSWORD){
 
-        short: `${fact} (#${i})`,
+document.getElementById("loginBox").style.display = "none";
 
-        detail:
-          `${fact} This detailed explanation expands on the scientific and historical importance of the fact. Fact variation number ${i} provides a unique version that helps prevent repetition and keeps the generator fresh for users.`
+document.getElementById("mainBox").style.display = "block";
 
-      });
+}else{
 
-    });
-
-  }
+document.getElementById("error").innerText =
+"Wrong Password";
 
 }
 
-generateDetailedFacts("science", scienceBase);
-generateDetailedFacts("animals", animalBase);
-generateDetailedFacts("space", spaceBase);
-generateDetailedFacts("history", historyBase);
-generateDetailedFacts("technology", technologyBase);
-
-console.log(facts);
-
-let usedFacts =
-JSON.parse(localStorage.getItem("usedFacts")) || [];
+}
 
 function generateFact(){
 
 const availableFacts =
-facts[currentCategory].filter(
-fact => !usedFacts.includes(fact.short)
+facts.filter(
+fact => !usedFacts.includes(fact)
 );
 
 if(availableFacts.length === 0){
 
 document.getElementById("fact").innerText =
-"No new facts remaining in this category.";
-
-document.getElementById("details").innerText =
-"Reset cache to see facts again.";
+"No more facts remaining.";
 
 return;
 
@@ -524,98 +465,12 @@ availableFacts[
 Math.floor(Math.random() * availableFacts.length)
 ];
 
-usedFacts.push(randomFact.short);
-
-localStorage.setItem(
-"usedFacts",
-JSON.stringify(usedFacts)
-);
+usedFacts.push(randomFact);
 
 document.getElementById("fact").innerText =
-randomFact.short;
-
-document.getElementById("details").innerText =
-randomFact.detail;
-
-updateStats();
+randomFact;
 
 }
-
-function updateStats(){
-
-const viewed = usedFacts.length;
-
-const total =
-facts[currentCategory].length;
-
-const remaining =
-facts[currentCategory].filter(
-fact => !usedFacts.includes(fact.short)
-).length;
-
-document.getElementById("viewedCount").innerText =
-viewed;
-
-document.getElementById("remainingCount").innerText =
-remaining;
-
-}
-
-function copyFact(){
-
-const text =
-document.getElementById("fact").innerText
-+
-" "
-+
-document.getElementById("details").innerText;
-
-navigator.clipboard.writeText(text);
-
-alert("Fact copied!");
-
-}
-
-function speakFact(){
-
-const text =
-document.getElementById("fact").innerText
-+
-". "
-+
-document.getElementById("details").innerText;
-
-const speech =
-new SpeechSynthesisUtterance(text);
-
-speechSynthesis.speak(speech);
-
-}
-
-function resetCache(){
-
-const password =
-prompt("Enter reset password");
-
-if(password === "1234"){
-
-localStorage.clear();
-
-usedFacts = [];
-
-alert("Cache reset successful");
-
-updateStats();
-
-}else{
-
-alert("Wrong password");
-
-}
-
-}
-
-updateStats();
 
 </script>
 
